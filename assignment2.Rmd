@@ -1,0 +1,60 @@
+---
+title: "assignment2"
+author: "Daniel Vogel"
+date: "1/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assignment 2: Beaver Body Temperatures
+
+The built in dataframe, **beaver1**, tracks the body temperature of a beaver over approximately 20 hours in 10 minute intervals.
+There are 4 columns: *day*, *time*, *temp*, *activ*
+
+The date=346.0 for all data so these observations were done on a single day.
+The time is a range of 0..2350 which represents hour:minutes but after midnight, time time resets to 0.
+The activ field is just: activ=1 or activ=0
+
+### Summary beaver1
+```{r beaver1, echo=FALSE}
+summary(beaver1)
+print("The first 5 entries")
+head(beaver1,n=5)
+print("The last 5 entries")
+tail(beaver1,n=5)
+```
+
+## Plotting the Temp Column
+>This was alot harder than I expected!  
+Since the "time" column in the beaver1 dataframe goes from 840..2350..0..340, it is not possible to simply plot time,temp.
+You would have to convert time into a sequence of numbers that increases.  
+
+Instead, I used the observation# as the x axis. This is not explicitly a column in beaver1. 
+The x-axis was created with a vector x from 1..#observations.  i.e. 1 2 3. ..114
+For the y-axis used the "temp" column from the beaver1 dataframe.  
+
+>DANGER Will Rogers!!
+
+This does not work if you use the syntax:  y<-beaver1["temp"] 
+
+Plot spits out an error, **"Error in xy.coords(x, y, xlabel, ylabel, log) :  'x' and 'y' lengths differ"**
+
+This is because "x" is a vector class and the "y" column is a sub-dataframe. Plot needs x,y to be the same type.  
+To create the y-axis, use the [[*]*column*] syntax.  i.e.  y<-beaver1[["temp"]]
+The [[]] converts the column to a vector.  Now x,y are both vector type. 
+
+The command to plot is then:
+plot(x,y,type="l")
+
+```{r beaver1Plot, echo=FALSE}
+observations<-nrow(beaver1)
+print(paste("Observations:",observations))
+x<-1:observations
+y<-beaver1[["temp"]]
+plot(x,y,type="l")
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
