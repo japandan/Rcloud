@@ -1,0 +1,125 @@
+---
+title: "era_date"
+author: "Daniel Vogel"
+date: "1/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## era_date() function
+
+This function converts date fields from a Japanese EYY-MM-DD format to a western YYYY-MM-DD format.
+
+Usage: era_date( date, direction )
+date:string quoted date in format YYYY-MM-DD or EYY-MM-DD
+direction: "greg" or "era" to indicate which conversion.  Japanese to (greg)orian or Gregorian to Japanese (era).
+
+### Converting recent dates
+Since 1873-01-01 the system of months and days follows the Gregorian calendar.
+This means that conversion of recent dates is trivial: Japanese month and day agree with Western month and day, and Western year is Japanese year plus era offset.
+
+    Era 	rom. 	starting date 	offset
+    明治 	Meiji 	1868-10-23 	  1867
+    大正 	Taishō 	1912-07-30 	  1911
+    昭和 	Shōwa 	1926-12-25 	  1925
+    平成 	Heisei 	1989-01-08 	  1988
+    令和 	Reiwa 	2019-05-01 	  2018
+
+For example, 平成27年6月1日 is 2015-06-01. 
+
+### function defined
+```{r} 
+## function to convert between japanese Year Era format "EYY-MM-DD and Gregorian format YYYY-MM-DD
+
+library(stringi)
+install.packages("lubridate")
+require(lubridate)
+library(lubridate)
+
+
+era_date<-function( inputdate="empty", direction="guess" ){
+  
+  # build a data structure indexed by the "era" to store the offsets and starting dates
+  # Since we start in the meiji era, we only go back to 1868 but those were good times!
+  #
+  era<-data.frame(code=c("M","T","S","H","R"),
+                  start_date=c("1868-10-23","1912-07-30","1926-12-25","1989-01-08","2019-05-01"),
+                  offset=c(1867,1911,1925,1988,2018),
+                  kanji=c("明治","大正","昭和","平成","令和"),
+                  romanji=c("Meiji","Taishō","Shōwa","Heisei","Reiwa")
+  )
+  
+  # validate input and offer an explanation
+  if (inputdate == "empty"){
+    message('Error: Please specify a date string in format YYYY-MM-DD or {era}YY-MM-DD')
+    message('Valid values for the {era} are R, H, S, T, M')
+    message("Please provide a direction argument of 'greg' or 'era'\n")
+    message('Usage: era_date("date-string", "greg"|"era" )\n')
+  
+    # Japanese years are prefixed by a letter to designate the dynasty name
+    # The letter is followed by 2 digits for the year of that dynasty
+    # valid era codes for this function are "M,T,S,H,R"...there are more going back many years to 1500
+
+    message("Japanese month and day agree with Western month and day.")
+    message("Western year is Japanese year plus era offset.")
+    message("Codes for {era}\n")
+    print(era, row.names=FALSE)
+
+    message("\nFor example, 平成27年6月1日 is usually stored as H27-06-01 and converts to 2015-06-01") 
+    message("\nUsage Examples")
+    message('Example: era_date( "H30-10-01", "greg") " Converts date Hesei 40 October,1st to YYYY-MM-DD format')
+    message('Example: era_Date( "1965-10-01", "era") Converts date Oct 1st, 1965 to Japanese era H40-10-01 format')
+  }
+  
+
+  if (direction=="greg") {
+    #convert a japanese date to gregorian
+    #
+    #  cut the date into 3 parts, the era code, the YY, and the -MM-DD
+    inputcode<-substring( inputdate, 1, 1)
+    inputYY<-as.numeric(substring( inputdate, 2,3))
+    input_MM_DD<-substring(inputdate,4,9)
+    # search the era dataframe for the row matching the era
+    # if the era is not valid, nrows=0 and exit with an error
+    era_row<-era[which(era$code==inputcode),]
+    codefound<-(nrow(era_row))
+    if( codefound == 0) {message(paste("Invalid era code:", inputcode)); return(NULL)}
+    # do the math to convert
+    offset<-as.numeric(era_row$offset)
+    gregDate<-paste(inputYY+offset,input_MM_DD, sep="")
+    return(gregDate)
+
+  } else if (direction=="era") {
+    #convert a gregorian date to japanese date
+    inputYYYY<-as.numeric(substring( inputdate, 1,4))
+    input_MM_DD<-substring(inputdate,5,10)
+    which_era<-max(which(ymd(era$start_date)<=ymd(inputdate)))
+    era_row<-era[which_era,]
+    code<-era_row$code
+    offset<-era_row$offset
+    ## do the math to subtract the offset from the gregorian year
+    year_of_era<-inputYYYY-offset
+    ## add the prefix code for the era
+    print(paste("This date is during the",era_row$romanji,"era",era_row$kanji))
+    eraDate<-paste(code,year_of_era,input_MM_DD, sep="")
+    return(eraDate)
+
+  } else {
+    print("Please provide a direction argument of 'greg' or 'era'")
+    return(NULL)
+  }
+  
+}
+```
+
+## era_date() usage
+
+ Example: era_date() usage without parameters will display helpful directions.
+
+
+```{r} 
+era_date()
+```
