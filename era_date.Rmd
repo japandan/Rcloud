@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## era_date() function
 
 This function converts date fields from a Japanese EYY-MM-DD format to a western YYYY-MM-DD format.
+On successful execution, the function will return the converted date string. On input errors, NULL is returned.
 
 Usage: era_date( date, direction )
 date:string quoted date in format YYYY-MM-DD or EYY-MM-DD
@@ -32,7 +33,7 @@ For example, 平成27年6月1日 is 2015-06-01.
 
 ### function defined
 ```{r} 
-## function to convert between japanese Year Era format "EYY-MM-DD and Gregorian format YYYY-MM-DD
+# function to convert between japanese Year Era format "EYY-MM-DD and Gregorian format YYYY-MM-DD
 
 library(stringi)
 install.packages("lubridate")

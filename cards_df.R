@@ -13,4 +13,13 @@ cards_df<-data.frame(face=rep(face,4),suit=rep(suits,13), value=rep(value,4))
 # 4  four     4
 #
 #draw 3 random cards..
-cards_df[sample(52,size=3,replace=FALSE), c('face','suit')]
+#cards_df[sample(52,size=3,replace=FALSE), c('face','suit')]
+#> summary(cards_df)
+# face          suit        value   
+# ace    : 4   clubs   :13   Min.   : 1  
+# eight  : 4   diamonds:13   1st Qu.: 4  
+# five   : 4   hearts  :13   Median : 7  
+# four   : 4   spades  :13   Mean   : 7  
+# jack   : 4                 3rd Qu.:10  
+# king   : 4                 Max.
+

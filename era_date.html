@@ -371,7 +371,7 @@ summary {
 
 <div id="era_date-function" class="section level2">
 <h2>era_date() function</h2>
-<p>This function converts date fields from a Japanese EYY-MM-DD format to a western YYYY-MM-DD format.</p>
+<p>This function converts date fields from a Japanese EYY-MM-DD format to a western YYYY-MM-DD format. On successful execution, the function will return the converted date string. On input errors, NULL is returned.</p>
 <p>Usage: era_date( date, direction ) date:string quoted date in format YYYY-MM-DD or EYY-MM-DD direction: “greg” or “era” to indicate which conversion. Japanese to (greg)orian or Gregorian to Japanese (era).</p>
 <div id="converting-recent-dates" class="section level3">
 <h3>Converting recent dates</h3>
@@ -386,7 +386,7 @@ summary {
 </div>
 <div id="function-defined" class="section level3">
 <h3>function defined</h3>
-<pre class="r"><code>## function to convert between japanese Year Era format &quot;EYY-MM-DD and Gregorian format YYYY-MM-DD
+<pre class="r"><code># function to convert between japanese Year Era format &quot;EYY-MM-DD and Gregorian format YYYY-MM-DD
 
 library(stringi)
 install.packages(&quot;lubridate&quot;)</code></pre>

@@ -1,8 +1,8 @@
-## function to convert japanese Year Era format to Gregorian format
+# function to convert between japanese Year Era format "EYY-MM-DD and Gregorian format YYYY-MM-DD
 #
 
 library(stringi)
-#install.packages("lubridate")
+install.packages("lubridate")
 require(lubridate)
 library(lubridate)
 
@@ -28,7 +28,7 @@ era_date<-function( inputdate="empty", direction="guess" ){
   
     # Japanese years are prefixed by a letter to designate the dynasty name
     # The letter is followed by 2 digits for the year of that dynasty
-    # valid era codes for this function are "M,T,S,H,R"...there are more going back many years
+    # valid era codes for this function are "M,T,S,H,R"...there are more going back many years to 1500
 
     message("Japanese month and day agree with Western month and day.")
     message("Western year is Japanese year plus era offset.")
