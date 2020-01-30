@@ -30,8 +30,6 @@ era_date<-function( inputdate="empty", direction="guess" ){
     # The letter is followed by 2 digits for the year of that dynasty
     # valid era codes for this function are "M,T,S,H,R"...there are more going back many years
 
-
-    # This code can be replaced by simply printing the "era" dataframe which we will create soon.
     message("Japanese month and day agree with Western month and day.")
     message("Western year is Japanese year plus era offset.")
     message("Codes for {era}\n")
