@@ -1,0 +1,72 @@
+---
+title: "Week4.Datasets"
+author: "Daniel Vogel"
+date: "2/14/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Source: https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset
+
+Content
+
+2019 Novel Coronavirus (2019-nCoV) is a virus (more specifically, a coronavirus) identified as the cause of an outbreak of respiratory illness first detected in Wuhan, China. Early on, many of the patients in the outbreak in Wuhan, China reportedly had some link to a large seafood and animal market, suggesting animal-to-person spread. However, a growing number of patients reportedly have not had exposure to animal markets, indicating person-to-person spread is occurring. At this time, it’s unclear how easily or sustainably this virus is spreading between people - CDC
+
+This dataset has daily level information on the number of affected cases, deaths and recovery from 2019 novel coronavirus. Please note that this is a time series data and so the number of cases on any given day is the cumulative number.
+
+The data is available from 22 Jan, 2020.
+Column Description
+
+2019_ncov_data.csv
+
+  Sno - Serial number
+  Date - Date and time of the observation in MM/DD/YYYY HH:MM:SS
+  Province / State - Province or state of the observation (Could be empty when missing)
+  Country - Country of observation
+  Last Update - Time in UTC at which the row is updated for the given province or country. (Not standardised currently. So please clean them before using it)
+  Confirmed - Number of confirmed cases
+  Deaths - Number of deaths
+  Recovered - Number of recovered cases
+
+Acknowledgements
+
+Johns Hopkins university has made the data available in google sheets format here. Sincere thanks to them.
+
+Thanks to WHO, CDC, NHC and DXY for making the data available in first place.
+
+Some insights could be
+
+    Changes in number of affected cases over time
+    Change in cases over time at country level
+    Latest number of affected cases
+
+
+```{r datasets, echo=FALSE, message = FALSE}
+ ncov_df<-readr:::read_csv(here::here("proj1.datasets/2019_nCoV_data.csv"))
+ ncov_confirmed_df<-readr:::read_csv(here::here("proj1.datasets/time_series_2019_ncov_confirmed.csv"))
+ ncov_deaths_df<-readr:::read_csv(here::here("proj1.datasets/time_series_2019_ncov_deaths.csv"))
+ ncov_recovered_df<-readr:::read_csv(here::here("proj1.datasets/time_series_2019_ncov_recovered.csv"))
+ ```
+ 
+### Summary of datasets
+ ```{r}
+ summary(ncov_df)
+ summary(ncov_deaths_df)
+ summary(ncov_confirmed_df)
+ summary(ncov_recovered_df)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
