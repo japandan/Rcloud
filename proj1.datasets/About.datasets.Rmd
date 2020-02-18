@@ -9,8 +9,30 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## 2019-nCoV Datasets
+Assignment:
+Find Three biological data sources that you can use for your first project. For each write about why you find the dataset interesting, anticipated difficulties, and a question you would like to answer. Perform a precursory exploration (types and amount of different variables and a simple graph) for each dataset and turn in an R Markdown document.
 
+# Why is this interesting?
+The nCoV virus is currently spreading at alarming rates.  There are efforts to track the spread to learn the nature of the virus.  It seems like a good demonstration of the capabilities of R, with respect to plotting graphs and Geo-locational information.  There is also a good opportunity to show progress of the virus over time.  
+
+I am also interested in developing dashboards to show this kind of data for other uses, such as CyberSecurity.  In fact, my website was hacked and as a result, I plan to develop a real-time R plot, to show where access is coming from in an effort to block access from bad actors.
+
+I also would like to show on a dashboard, work being done by technicians in each location.  Working with these nCoV datasets will help me develop the skills to create these real-time dashboards.
+
+# Questions that could be answered from this data are:
+    Rate of change in number of affected cases over time
+    Mortality rate per country
+    Recovery rate per country
+    Confirm Rate of Spread which is supposed to be about 2
+    
+# Issues with the data
+The main issue is how lopsided the data is per country.  With 60,000+ cases in China and less than 100 cases in other regions, it is difficult to show this information to scale on a plot.  To tackle this, for this assignment, I had to filter China data from the other regions.  
+
+Another issue with the data is that the tests for nCoV are not simple and accurate so data is being under-reported.  DNA tests are accurate but cannot be completed for all sick people and becuase of quarantines and movement restrictions, people sick at home, are not being recorded.
+
+
+# Description of the Data from the source, JHU via Kaggle.
 Source: https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset
 
 Content
@@ -34,39 +56,93 @@ Column Description
   Recovered - Number of recovered cases
 
 Acknowledgements
-
 Johns Hopkins university has made the data available in google sheets format here. Sincere thanks to them.
-
 Thanks to WHO, CDC, NHC and DXY for making the data available in first place.
 
-Some insights could be
 
-    Changes in number of affected cases over time
-    Change in cases over time at country level
-    Latest number of affected cases
-
+Each of these datasets has 72 rows for location and 40 variables. 
+36 of the columns have daily statistics for the date range 1/20/2020 - 2/9/2020
+Country data is included in the first 4 columns that can be used for plotting 
 
 ```{r datasets, echo=FALSE, message = FALSE}
- ncov_df<-readr:::read_csv(here::here("proj1.datasets/2019_nCoV_data.csv"))
  ncov_confirmed_df<-readr:::read_csv(here::here("proj1.datasets/time_series_2019_ncov_confirmed.csv"))
  ncov_deaths_df<-readr:::read_csv(here::here("proj1.datasets/time_series_2019_ncov_deaths.csv"))
  ncov_recovered_df<-readr:::read_csv(here::here("proj1.datasets/time_series_2019_ncov_recovered.csv"))
  ```
  
-### Summary of datasets
+### Summary of datasets (commented because they were verbose)
  ```{r}
- summary(ncov_df)
- summary(ncov_deaths_df)
- summary(ncov_confirmed_df)
- summary(ncov_recovered_df)
+ #summary(ncov_deaths_df)
+ #summary(ncov_confirmed_df)
+ #summary(ncov_recovered_df)
 ```
 
 ## Including Plots
+```{r totals, echo=FALSE}
+library(magrittr)
+library(dplyr)
+#library(ggplot2)
+##
+## Read the 3 datasets into dataframes
+country_totals_df<-ncov_confirmed_df %>% 
+   group_by(cases=`02/09/20 23:20`,country=`Country/Region`)# %>% 
 
-You can also embed plots, for example:
+deaths_df<-ncov_deaths_df %>% 
+   group_by(cases=`02/09/20 23:20`,country=`Country/Region`)# %>% 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+recovered_df<-ncov_recovered_df %>% 
+   group_by(cases=`02/09/20 23:20`,country=`Country/Region`)# %>% 
+
+
+#  summarise (remove if too much detail)
+
+country_df<-country_totals_df %>% group_by(country) %>% summarize(count=sum(cases))
+deaths_df<-deaths_df %>% group_by(country) %>% summarize(count=sum(cases))
+recovered_df<-recovered_df %>% group_by(country) %>% summarize(count=sum(cases))
+
+## sort decending
+country_df<-country_df[order(-country_df$count),]
+deaths_df<-deaths_df[order(-deaths_df$count),]
+deaths_df<-deaths_df %>% filter(count!=0)     #remove country with count=0
+not_china_deaths_df<-deaths_df %>% filter(country!='Mainland China')
+recovered_df<-recovered_df[order(-recovered_df$count),]
+recovered_df<-recovered_df %>% filter(count!=0) #remove country with count=0
+not_china_recovered_df<-recovered_df %>% filter(country!='Mainland China')
+
+##filter out Mainland China before plotting 
+not_china<-country_df %>% filter(country!='Mainland China')
+print(c("Locations outside China infected:", nrow(not_china)))
+
+top15<-not_china[1:15,]
+# barchart with added parameters
+barplot(top15$count,
+        main = "Top 15 Cases by Country",
+        xlab = "Total Cases Outside China",
+        names.arg = top15$country, las=1,
+        col = "darkred",
+        width=1,
+        horiz = TRUE)
+
+# plot for deaths dataset
+print("Locations with deaths")
+print(deaths_df)
+barplot(not_china_deaths_df$count,
+        main = "nCoV Deaths by Country",
+        xlab = "Deaths outside China",
+        names.arg = not_china_deaths_df$country, las=1,
+        col = "darkred",
+        width=1,
+        horiz = TRUE)
+
+## Plot for recovered dataset
+print("Recovered cases")
+print(recovered_df)
+barplot(not_china_recovered_df$count,
+        main = "Recovered nCoV Cases by Country",
+        xlab = "Total Cases Outside China",
+        names.arg = not_china_recovered_df$country, las=1,
+        col = "darkred",
+        width=1,
+        horiz = TRUE)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
